@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A modern, high-precision Spring Boot Calculator website with real-time math evaluation, history logging, and responsive dark glassmorphic design.">
+  <title>Apex Calculator | Spring Boot Web App</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Header Section -->
+    <header class="app-header">
+      <div class="brand-badge">
+        <span class="icon-leaf">🌱</span> Powered by Spring Boot 3 &amp; Modern Vanilla Web
+      </div>
+      <h1 class="brand-title">Apex Matrix Calculator</h1>
+      <p class="brand-subtitle">High-precision arithmetic engine backed by Spring Boot REST API &amp; client-side instant preview</p>
+      
+      <!-- System status -->
+      <div class="system-status">
+        <div class="status-pill">
+          <span class="status-dot" id="server-status-dot"></span>
+          <span id="server-status-text">Backend: Connecting...</span>
+        </div>
+        <div class="status-pill">
+          <span>Latency:</span>
+          <span class="latency-meter" id="server-latency">-- ms</span>
+        </div>
+        <div class="status-pill">
+          <span>Version:</span>
+          <span style="color:#e2e8f0; font-family:'JetBrains Mono',monospace;">v1.0.0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="calculator-container">
+      <!-- Left: Calculator Unit -->
+      <section class="glass-card" aria-label="Calculator Interface">
+        <!-- Top controls bar inside chassis -->
+        <div class="calc-top-bar">
+          <span class="mode-badge" id="calc-mode-indicator">REST API + Live</span>
+          <div class="toggle-group">
+            <button class="icon-btn active" id="btn-sound-toggle" title="Toggle Sound Feedback (Web Audio)" aria-label="Toggle sound feedback">
+              🔊
+            </button>
+            <button class="icon-btn" id="btn-history-toggle" title="Toggle History Panel" aria-label="Toggle history drawer">
+              📜
+            </button>
+          </div>
+        </div>
+
+        <!-- Calculator Display Screen -->
+        <div class="calc-display" id="calc-display" role="region" aria-live="polite">
+          <div class="history-line" id="display-history">&nbsp;</div>
+          <div class="main-line-container">
+            <div class="main-line" id="display-main">0</div>
+            <span class="cursor-blink" aria-hidden="true"></span>
+          </div>
+          <div class="preview-subtext" id="display-preview"></div>
+        </div>
+
+        <!-- Scientific / Functions Strip -->
+        <div class="scientific-strip">
+          <button class="key-btn btn-fn" data-action="insert" data-value="(" title="Open Parenthesis">(</button>
+          <button class="key-btn btn-fn" data-action="insert" data-value=")" title="Close Parenthesis">)</button>
+          <button class="key-btn btn-fn" data-action="fn-square" title="Square (x²)">x²</button>
+          <button class="key-btn btn-fn" data-action="insert" data-value="√(" title="Square Root">√</button>
+          <button class="key-btn btn-fn" data-action="insert" data-value="^" title="Power (x^y)">xʸ</button>
+          <button class="key-btn btn-fn" data-action="insert" data-value="!" title="Factorial (n!)">n!</button>
+          <button class="key-btn btn-fn" data-action="insert" data-value="%" title="Modulo (%)">%</button>
+          <button class="key-btn btn-fn" data-action="fn-reciprocal" title="Reciprocal (1/x)">1/x</button>
+        </div>
+
+        <!-- Primary Keypad Grid -->
+        <div class="main-keypad">
+          <!-- Row 1 -->
+          <button class="key-btn btn-clear" data-action="all-clear" title="All Clear (Escape)" id="key-ac">AC</button>
+          <button class="key-btn btn-clear" data-action="backspace" title="Backspace (Delete)" id="key-backspace">⌫</button>
+          <button class="key-btn btn-fn" data-action="fn-negate" title="Toggle Positive/Negative">±</button>
+          <button class="key-btn btn-op" data-action="insert" data-value=" ÷ " title="Divide (/)">÷</button>
+
+          <!-- Row 2 -->
+          <button class="key-btn btn-num" data-action="insert" data-value="7">7</button>
+          <button class="key-btn btn-num" data-action="insert" data-value="8">8</button>
+          <button class="key-btn btn-num" data-action="insert" data-value="9">9</button>
+          <button class="key-btn btn-op" data-action="insert" data-value=" × " title="Multiply (*)">×</button>
+
+          <!-- Row 3 -->
+          <button class="key-btn btn-num" data-action="insert" data-value="4">4</button>
+          <button class="key-btn btn-num" data-action="insert" data-value="5">5</button>
+          <button class="key-btn btn-num" data-action="insert" data-value="6">6</button>
+          <button class="key-btn btn-op" data-action="insert" data-value=" - " title="Subtract (-)">−</button>
+
+          <!-- Row 4 -->
+          <button class="key-btn btn-num" data-action="insert" data-value="1">1</button>
+          <button class="key-btn btn-num" data-action="insert" data-value="2">2</button>
+          <button class="key-btn btn-num" data-action="insert" data-value="3">3</button>
+          <button class="key-btn btn-op" data-action="insert" data-value=" + " title="Add (+)">+</button>
+
+          <!-- Row 5 -->
+          <button class="key-btn btn-num" data-action="insert" data-value="0">0</button>
+          <button class="key-btn btn-num" data-action="insert" data-value="00">00</button>
+          <button class="key-btn btn-num" data-action="insert" data-value=".">.</button>
+          <button class="key-btn btn-equals" data-action="equals" title="Calculate (Enter / =)" id="key-equals">=</button>
+        </div>
+      </section>
+
+      <!-- Right: History Side Panel -->
+      <aside class="glass-card history-panel" id="history-container" aria-label="Calculation History">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>⏱️</span> Server History
+          </div>
+          <button class="clear-history-btn" id="btn-clear-history" title="Clear all calculations from server">
+            Clear All
+          </button>
+        </div>
+        <div class="history-list" id="history-list">
+          <div class="empty-history" id="empty-history-placeholder">
+            <span class="empty-history-icon">📊</span>
+            <p>No calculations yet</p>
+            <span style="font-size: 0.75rem; color: #64748b;">Equations evaluated via Spring Boot will appear here</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Keyboard Shortcuts Guidance -->
+    <footer class="keyboard-hints">
+      <span class="kbd-chip"><kbd>0</kbd>–<kbd>9</kbd> Digits</span>
+      <span class="kbd-chip"><kbd>+</kbd> <kbd>-</kbd> <kbd>*</kbd> <kbd>/</kbd> Operators</span>
+      <span class="kbd-chip"><kbd>Enter</kbd> / <kbd>=</kbd> Calculate</span>
+      <span class="kbd-chip"><kbd>Backspace</kbd> Delete</span>
+      <span class="kbd-chip"><kbd>Esc</kbd> Clear</span>
+      <span class="kbd-chip"><kbd>(</kbd> <kbd>)</kbd> Parentheses</span>
+    </footer>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
